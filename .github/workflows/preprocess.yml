@@ -1,18 +1,31 @@
-name: Auto Preprocess Milk Quality Dataset
+name: Auto Preprocess Milk
 
 on:
   push:
     paths:
       - "MilkQuality_raw/**"
       - "preprocessing/**"
+      - ".github/workflows/preprocess.yml"
+
+permissions:
+  contents: write
 
 jobs:
   preprocess:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Debug - show repo files
+        run: |
+          pwd
+          ls -la
+          ls -la MilkQuality_raw || true
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -21,16 +34,21 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install pandas scikit-learn numpy
 
       - name: Run preprocessing
         run: |
-          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py \
-            --input MilkQuality_raw/MilkQuality_raw.csv \
-            --output MilkQuality_preprocessing/
+          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py --input MilkQuality_raw/MilkQuality_raw.csv --output preprocessing/MilkQuality_Preprocessing/
+        env:
+          PYTHONUNBUFFERED: 1
 
-      - name: Commit updated dataset
+      - name: Show preprocessed files
+        run: ls -la MilkQuality_preprocessing || true
+
+      - name: Commit updated dataset (action)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Auto update preprocessed milk dataset"
-          file_pattern: "MilkQuality_preprocessing/*"
+          file_pattern: "MilkQuality_preprocessing/**"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
