@@ -1,0 +1,36 @@
+name: Auto Preprocess Milk Quality Dataset
+
+on:
+  push:
+    paths:
+      - "MilkQuality_raw/**"
+      - "preprocessing/**"
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pandas scikit-learn numpy
+
+      - name: Run preprocessing
+        run: |
+          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py \
+            --input MilkQuality_raw/MilkQuality_raw.csv \
+            --output MilkQuality_preprocessing/
+
+      - name: Commit updated dataset
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto update preprocessed milk dataset"
+          file_pattern: "MilkQuality_preprocessing/*"
