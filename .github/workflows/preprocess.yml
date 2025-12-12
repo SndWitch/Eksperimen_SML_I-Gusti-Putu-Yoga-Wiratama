@@ -24,7 +24,9 @@ jobs:
       - name: Debug - show repo files
         run: |
           pwd
+          echo "Root listing:"
           ls -la
+          echo "MilkQuality_raw listing:"
           ls -la MilkQuality_raw || true
 
       - name: Set up Python
@@ -39,19 +41,26 @@ jobs:
 
       - name: Run preprocessing
         run: |
-          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py --input MilkQuality_raw/MilkQuality_raw.csv --output preprocessing/MilkQuality_preprocessing/
+          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py \
+            --input MilkQuality_raw/MilkQuality_raw.csv \
+            --output preprocessing/MilkQuality_preprocessing/
         env:
           PYTHONUNBUFFERED: 1
 
-      - name: Show preprocessed files
-        run: ls -la MilkQuality_preprocessing || true
-
-      - name: Debug - check output folder on runner
+      - name: Debug - list output and find csv (look inside preprocessing folder)
         run: |
-          echo "--- Listing output folder ---"
-          ls -la
-          echo "--- Listing MilkQuality_preprocessing ---"
-          ls -la MilkQuality_preprocessing || echo "Folder not found"
+          echo "=== listing preprocessing ==="
+          ls -la preprocessing || true
+          echo "=== listing output dir ==="
+          ls -la preprocessing/MilkQuality_preprocessing || echo "Output folder not found"
+          echo "=== find all csv ==="
+          find . -type f -name "*.csv" -print || true
+
+      - name: Upload preprocessed files as artifact (downloadable)
+        uses: actions/upload-artifact@v4
+        with:
+          name: preprocessed-csv
+          path: preprocessing/MilkQuality_preprocessing/**
 
       - name: Commit updated dataset (action)
         uses: stefanzweifel/git-auto-commit-action@v5
