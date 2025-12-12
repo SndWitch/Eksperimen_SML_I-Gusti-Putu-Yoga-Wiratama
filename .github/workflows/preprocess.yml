@@ -46,9 +46,16 @@ jobs:
       - name: Show preprocessed files
         run: ls -la MilkQuality_preprocessing || true
 
+      - name: Debug - check output folder on runner
+        run: |
+          echo "--- Listing output folder ---"
+          ls -la
+          echo "--- Listing MilkQuality_preprocessing ---"
+          ls -la MilkQuality_preprocessing || echo "Folder not found"
+
       - name: Commit updated dataset (action)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Auto update preprocessed milk dataset"
-          file_pattern: "MilkQuality_preprocessing/**"
+          file_pattern: "preprocessing/MilkQuality_preprocessing/**"
           github_token: ${{ secrets.GITHUB_TOKEN }}
