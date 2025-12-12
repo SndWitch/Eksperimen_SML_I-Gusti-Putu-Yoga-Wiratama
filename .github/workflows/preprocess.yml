@@ -39,7 +39,7 @@ jobs:
 
       - name: Run preprocessing
         run: |
-          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py --input MilkQuality_raw/MilkQuality_raw.csv --output preprocessing/MilkQuality_Preprocessing/
+          python preprocessing/automate_I-Gusti-Putu-Yoga-Wiratama.py --input MilkQuality_raw/MilkQuality_raw.csv --output preprocessing/MilkQuality_preprocessing/
         env:
           PYTHONUNBUFFERED: 1
 
